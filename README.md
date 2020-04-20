@@ -25,7 +25,7 @@ venv\Scripts\activate
 * Restarting with reloader
 ```
 
-## Registrera en användare med curl
+## Registrera en användare med curl (sqlalchemy versionen)
 ```
 $ curl -i -X POST -H "Content-Type: application/json" -d '{"username":"oscar","password":"dva200"}' http://127.0.0.1:5000/api/users
 HTTP/1.0 201 CREATED
@@ -40,7 +40,7 @@ Date: Mon, 20 Apr 2020 11:35:39 GMT
 }
 ```
 
-## Begär en auth-token med curl
+## Begär en auth-token med curl (sqlalchemy versionen)
 ```
 $ curl -u oscar:dva200 -i -X GET http://127.0.0.1:5000/api/token
 HTTP/1.0 200 OK
@@ -54,7 +54,7 @@ Date: Mon, 20 Apr 2020 11:37:02 GMT
 }
 ```
 
-## Begär en skyddad resurs med curl__
+## Begär en skyddad resurs med curl (sqlalchemy versionen)
 ```
 $ curl -u oscar:dva200 -i -X GET http://127.0.0.1:5000/api/login
 HTTP/1.0 200 OK
