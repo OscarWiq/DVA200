@@ -1,3 +1,4 @@
+# Detta är ett proof of concept varför den andra versionen med SQLAlchemy är bättre
 
 from flask import Flask, jsonify, request, abort, make_response, url_for
 from flask_httpauth import HTTPBasicAuth
@@ -45,14 +46,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True, ssl_context='adhoc')
-
-
-from flask import Flask
-app = Flask(__name__)
-
-@app.route("/")
-def hello():
-    return "Hello World!"
-
-if __name__ == "__main__":
-    app.run(debug=True)
