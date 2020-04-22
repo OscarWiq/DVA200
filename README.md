@@ -1,9 +1,9 @@
 # DVA200
 
 ## Installation
-
+```
 pip3 install virtualenv
-
+````
 ### Mac/Linux
 ```
 $ virtualenv venv
