@@ -1,10 +1,13 @@
 #!/usr/bin/env python
+#Author: Oscar W owt18001
+
 import os
 from flask import Flask, abort, request, jsonify, g, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+import cryptography
 
 # init
 app = Flask(__name__)
@@ -87,6 +90,17 @@ def get_user(id):
         abort(400)
     return jsonify({'username': user.username})
 
+@app.route('/api/users/del/<int:id>', methods=['DELETE'])
+@auth.login_required
+def del_user(id):
+    user = User.query.get(id)
+    name = user.username
+    if not user:
+        abort(400)
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'username': name})
+
 # Returnera en autentiserings-token
 # Kräver HTTPBasicAuth header
 # Success: Json-Objekt returneras med fältet
@@ -111,4 +125,4 @@ def get_resource():
 if __name__ == '__main__':
     if not os.path.exists('db.sqlite'):
         db.create_all()
-    app.run(debug=True) # för https: app.run(debug=True, ssl_context='adhoc')
+    app.run(debug=True, ssl_context='adhoc') # för https: app.run(debug=True, ssl_context='adhoc')
