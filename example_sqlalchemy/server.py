@@ -63,6 +63,7 @@ def verify_password(username_or_token, password):
 # Success: 201 Created
 # Failure: 400 Bad Request
 @app.route('/api/users', methods=['POST'])
+@auth.login_required
 def new_user():
     username = request.json.get('username')
     password = request.json.get('password')
