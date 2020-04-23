@@ -29,10 +29,8 @@ param_pw = "password"
 
 #init
 pw = "oscar"
+learn = False
 
-learn = True
-#learn = "del"
-cnt = 0
 while True:
 
 	pw = input()
@@ -97,3 +95,4 @@ while True:
 				print(f"User not in tags.json, User: {pw}")
 	else:
 		learn = False
+		
