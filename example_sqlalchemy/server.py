@@ -76,9 +76,10 @@ def new_user():
         abort(400)    # användaren existerar redan
     user = User(username=username)
     user.hash_password(password)
+    users = User.query.all()
     db.session.add(user)
     db.session.commit()
-    return (jsonify({'username': user.username}), 201, {'Location': url_for('get_user', id=user.id, _external=True)})
+    return (jsonify({'username': user.username, 'id': user.id}), 201, {'Location': url_for('get_user', id=user.id, _external=True)})
 
 # Returnera en användare
 # Success: 200 OK
@@ -90,16 +91,25 @@ def get_user(id):
         abort(400)
     return jsonify({'username': user.username})
 
+# Avregistrera användare
+# Success: 200 OK
+# Failure: 400 Bad Request
 @app.route('/api/users/del/<int:id>', methods=['DELETE'])
 @auth.login_required
 def del_user(id):
-    user = User.query.get(id)
-    name = user.username
-    if not user:
-        abort(400)
-    db.session.delete(user)
-    db.session.commit()
-    return jsonify({'username': name})
+	user = User.query.get(id)
+	if not user:
+		abort(400)
+	uid_to_return = user.id
+	db.session.delete(user)
+	db.session.commit()
+
+	users = User.query.all()
+	for i in range(id - 1, len(users)):
+		if not users[i].id == i + 1:
+			users[i].id = i + 1
+	db.session.commit()
+	return jsonify({'id': uid_to_return})
 
 # Returnera en autentiserings-token
 # Kräver HTTPBasicAuth header

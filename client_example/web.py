@@ -16,31 +16,27 @@ param_pw = "password"
 
 base_url = "https://127.0.0.1:5000"
 
-def get(usr, pw):
+def get(pw):
 	url = base_url + "/api/login"
-	res = requests.get(url, auth=HTTPBasicAuth(usr, pw), verify=False)
-	return res.status_code
+	res = requests.get(url, auth=HTTPBasicAuth(pw, pw), verify=False)
+	return res
 
-def post(usr, pw):
+def post(pw):
 	global username, password
 	url = base_url + "/api/users"
-
 	body = {
-		param_usr : usr,
+		param_usr : pw,
 		param_pw : pw
 	}
-
-	if len(usr) == 0 or len(pw) == 0:
+	if len(pw) == 0 or pw == "":
 		return 0
 	res = requests.post(url=url, json=body, auth=HTTPBasicAuth(username, password), verify=False)
-	return res.status_code
+	return res
 
-def delete(usr, pw, id):
+def delete(usr):
 	global username, password
-	url = base_url + "/api/users/" + str(id)
-	res = requests.get(url, verify=False)
-	if int(res.json()['username']) == id:
-		del_url = base_url + "/api/users/del/"
-		res_del = requests.delete(url=del_url + str(id), auth=HTTPBasicAuth(username, password), verify=False) 
-		return res_del.status_code
-	return 0
+	if not len:
+		return 0
+	url = base_url + "/api/users/del/"
+	res = requests.delete(url=url + str(usr), auth=HTTPBasicAuth(username, password), verify=False) 
+	return res
