@@ -1,4 +1,4 @@
-#!/user_id/bin/env python
+#!/usr/bin/env python
 # Authors: Oscar & Gustav 
 
 import json
