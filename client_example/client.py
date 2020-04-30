@@ -6,15 +6,21 @@ import requests
 from requests.auth import HTTPBasicAuth
 import web
 from hashlib import blake2b
+from collections import UserDict
+import pickle
+import easy_dict
 
-with open ("tags.json", "r") as f:
-	d = json.load(f)
-tags = d
+try:
+	with open ("tags", "rb") as f:
+		d = pickle.load(f)
+	tags = d
+except:
+	tags = []
 
 def get_key(val, list):
 	for i in list:
-		if val == i[param_pw]:
-			return i[param_user]
+		if val == i.param_pw:
+			return i.param_user
 	return 0
 
 def pw_handler(val):
@@ -25,7 +31,7 @@ def pw_handler(val):
 
 def pw_checker(val, list):
 	for i in list:
-		if val == i[param_pw]:
+		if val == i.param_pw:
 			return True
 	return False
 
@@ -35,7 +41,6 @@ param_pw = "password"
 param_id = "id"
 
 #init
-pw = "oscar"
 learn = False
 
 while True:
@@ -65,13 +70,11 @@ while True:
 						user_id = res.json()[param_id]
 						print(str(user_id) + ' ' + pw + ' was created via POST.')
 						
-						user = {}
-						user[param_user] = user_id
-						user[param_pw] = pw
+						user = EasyDict(param_user=user_id, param_pw=pw)
 						tags.append(user)
 						
-						with open('tags.json', 'w') as f:
-							f.write(json.dumps(tags))
+						with open('tags', 'wb') as f:
+							pickle.dump(tags, f)
 					elif res == 0:
 						print("post() error: expected user_id, pw")
 						exit()
@@ -91,11 +94,12 @@ while True:
 
 						tags.remove(tags[user_id - 2])
 						for i in range(user_id - 2, len(tags)):
-							if not tags[i][param_user] == i + 2:
-								tags[i][param_user] = i + 2
+							if not tags[i].param_user == i + 2:
+								tags[i].param_user = i + 2
 						
-						with open('tags.json', 'w') as f:
-							f.write(json.dumps(tags))
+						print(tags) # debug
+						with open('tags', 'wb') as f:
+							pickle.dump(tags, f)
 						
 						print(str(user_id) + ' ' + ' removed via DELETE /')
 					elif res == 0:
