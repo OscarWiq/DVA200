@@ -6,9 +6,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 import web
 from hashlib import blake2b
-from collections import UserDict
 import pickle
-import easy_dict
+from easy_dict import EasyDict
 
 try:
 	with open ("tags", "rb") as f:
