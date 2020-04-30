@@ -1,4 +1,5 @@
 # Author: Oscar
+from collections import UserDict
 
 class EasyDict(UserDict):
 
