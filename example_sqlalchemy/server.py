@@ -66,7 +66,7 @@ def verify_password(username_or_token, password):
 # Success: 201 Created
 # Failure: 400 Bad Request
 @app.route('/api/users', methods=['POST'])
-@auth.login_required
+#@auth.login_required
 def new_user():
     username = request.json.get('username')
     password = request.json.get('password')
@@ -84,7 +84,7 @@ def new_user():
 # Returnera en användare
 # Success: 200 OK
 # Failure: 400 Bad Request
-@app.route('/api/users/<int:id>')
+@app.route('/api/users/<id>')
 def get_user(id):
     user = User.query.get(id)
     if not user:
@@ -103,12 +103,6 @@ def del_user(id):
 	uid_to_return = user.id
 	db.session.delete(user)
 	db.session.commit()
-
-	users = User.query.all()
-	for i in range(id - 1, len(users)):
-		if not users[i].id == i + 1:
-			users[i].id = i + 1
-	db.session.commit()
 	return jsonify({'id': uid_to_return})
 
 # Returnera en autentiserings-token
@@ -123,6 +117,7 @@ def get_auth_token():
     token = g.user.generate_auth_token(600)
     return jsonify({'token': token.decode('ascii'), 'duration': 600})
 
+
 # Returnera en skyddad resurs, detta är vad vi vill använda
 # Kräver HTTPBasicAuth header
 # Success: Json-Objekt med data till den autentiserade användaren
@@ -130,9 +125,9 @@ def get_auth_token():
 @app.route('/api/login')
 @auth.login_required
 def get_resource():
-    return jsonify({'data': 'Hello, %s!' % g.user.username})
+    return jsonify({'data': 'Hello, %s!' % g.user.username, 'id': g.user.id})
 
 if __name__ == '__main__':
     if not os.path.exists('db.sqlite'):
         db.create_all()
-    app.run(debug=True, ssl_context='adhoc') # för https: app.run(debug=True, ssl_context='adhoc')
+    app.run(debug=True)#, #ssl_context='adhoc') # för https: app.run(debug=True, ssl_context='adhoc')

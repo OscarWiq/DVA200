@@ -1,38 +1,46 @@
 #!/usr/bin/env python
 # Authors: Oscar & Gustav 
 
+import threading
 import json
 import requests
 from requests.auth import HTTPBasicAuth
 import web
 from hashlib import blake2b
-import pickle
-from easy_dict import EasyDict
 
-try:
-	with open ("tags", "rb") as f:
-		d = pickle.load(f)
-	tags = d
-except:
-	tags = []
 
-def get_key(val, list):
-	for i in list:
-		if val == i.param_pw:
-			return i.param_user
-	return 0
+# LED CONTROLS
+#import RPi.GPIO as GPIO
+
+##pin definitions
+#LED1 = 11
+#LED2 = 13
+
+##GPIO settings
+#GPIO.setwarnings(False)
+#GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(LED1, GPIO.OUT)
+#GPIO.setup(LED2, GPIO.OUT)
+
+#def led_control(temp_msg):
+#    if temp_msg == "01":
+#        print ("LED1 on: ", temp_msg)
+#        GPIO.output(LED1, GPIO.HIGH)
+#    elif temp_msg == "10":
+#        print ("LED2 on", temp_msg)
+#        GPIO.output(LED2, GPIO.HIGH)
+#    elif temp_msg == "11":
+#        GPIO.outpout(LED2, GPIO.LOW)
+#    else:
+#        print ("LED off: ", temp_msg)
+#        GPIO.output(LED1, GPIO.LOW)
+#        GPIO.output(LED2, GPIO.LOW)
 
 def pw_handler(val):
 	h = blake2b(digest_size=20)
 	h.update(val.encode('utf-8'))
 	digest = h.hexdigest()
 	return digest
-
-def pw_checker(val, list):
-	for i in list:
-		if val == i.param_pw:
-			return True
-	return False
 
 #params
 param_user = "username"
@@ -42,38 +50,34 @@ param_id = "id"
 #init
 learn = False
 
-while True:
+def reader():
 
-	pw = input()
-	if len(pw) != 0 and pw != "":
+	global learn
 
-		if pw[0] == "&":
-			learn = True
-			pw = pw[1:]
+	while True:
 
-		elif pw[0] == "*":
-			learn = "del"
-			pw = pw[1:]
+		pw = input()
+		if len(pw) != 0 and pw != "":
 
-		else:
-			learn = False
+			if pw[0] == "&":
+				learn = True
+				pw = pw[1:]
 
-		if learn == True:
+			elif pw[0] == "*":
+				learn = "del"
+				pw = pw[1:]
 
-			pw = pw_handler(pw)
+			else:
+				learn = False
 
-			if not pw_checker(pw, tags):
+			if learn == True:
+
+				pw = pw_handler(pw)
 				try:
 					res = web.post(pw)
 					if res.status_code == 201:
 						user_id = res.json()[param_id]
 						print(str(user_id) + ' ' + pw + ' was created via POST.')
-						
-						user = EasyDict(param_user=user_id, param_pw=pw)
-						tags.append(user)
-						
-						with open('tags', 'wb') as f:
-							pickle.dump(tags, f)
 					elif res == 0:
 						print("post() error: expected user_id, pw")
 						exit()
@@ -83,24 +87,13 @@ while True:
 				except:
 					pass
 
-		elif learn == "del":
-			pw = pw_handler(pw)
-			if pw_checker(pw, tags):
-				try:
-					user_id = get_key(pw, tags)
-					res = web.delete(str(user_id))
-					if res.status_code == 200:
+			elif learn == "del":
 
-						tags.remove(tags[user_id - 2])
-						for i in range(user_id - 2, len(tags)):
-							if not tags[i].param_user == i + 2:
-								tags[i].param_user = i + 2
-						
-						print(tags) # debug
-						with open('tags', 'wb') as f:
-							pickle.dump(tags, f)
-						
-						print(str(user_id) + ' ' + ' removed via DELETE /')
+				pw = pw_handler(pw)
+				try:
+					res = web.delete(pw)
+					if res.status_code == 200:
+						print(str(res.json()[param_id]) + ' ' + ' removed via DELETE /')
 					elif res == 0:
 						print("delete() error: expected user_id")
 						exit()
@@ -110,11 +103,10 @@ while True:
 				except:
 					pass
 
-		else:
-			pw = pw_handler(pw)
-			if pw_checker(pw, tags):
+			else:
+
+				pw = pw_handler(pw)
 				try:
-					#user_id = get_key(pw, tags)
 					res = web.get(pw)
 					if res.status_code == 200:
 						print(str(res.json()) + ' ' + pw + ' sent GET /' ) # typ tänd lampa
@@ -122,8 +114,26 @@ while True:
 						print(f"Something went wrong. Code: {res.status_code}")
 				except:
 					pass
-			else:
-				print(f"User not in tags.json")
-	else:
-		learn = False
+		else:
+			learn = False
+
+
+def main():
+
+	try:
+		threads = []
+
+		t1 = threading.Thread(target=reader)
+		t1.start()
+		threads.append(t1)
+		print(threading.enumerate())
+		for thread in threads:
+			thread.join()
+
+	except KeyboardInterrupt:
+		#GPIO.cleanup()
+		print ("Program Exited Cleanly")
+
+if __name__ == "__main__":
+	main()
 		
