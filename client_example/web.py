@@ -16,7 +16,7 @@ param_pw = "password"
 
 
 base_url = "https://52.200.1.200:5005"
-#base_url = "http://127.0.0.1:5000"
+#base_url = "https://127.0.0.1:5000"
 
 def get(pw):
 	url = base_url + "/api/login"

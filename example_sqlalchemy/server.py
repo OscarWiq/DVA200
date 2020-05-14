@@ -130,4 +130,4 @@ def get_resource():
 if __name__ == '__main__':
     if not os.path.exists('db.sqlite'):
         db.create_all()
-    app.run(debug=True)#, #ssl_context='adhoc') # för https: app.run(debug=True, ssl_context='adhoc')
+    app.run(debug=True, ssl_context='adhoc') # för https: app.run(debug=True, ssl_context='adhoc')
