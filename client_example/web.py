@@ -14,7 +14,6 @@ param_id = "id"
 param_usr = "username"
 param_pw = "password"
 
-
 base_url = "https://52.200.1.200:5005"
 #base_url = "https://127.0.0.1:5000"
 
@@ -33,7 +32,7 @@ def post(pw):
 	if len(pw) == 0 or pw == "":
 		return 0
 	print(body)
-	res = print(requests.post(url=url, json=body, auth=HTTPBasicAuth(username, password), verify=False))
+	res = requests.post(url=url, json=body, auth=HTTPBasicAuth(username, password), verify=False)
 	return res
 
 def delete(pw):
