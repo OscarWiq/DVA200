@@ -97,78 +97,78 @@ def reader():
 
 	global learn
 
-	#with open('/dev/tty0', 'r') as tty:
+	with open('/dev/tty0', 'r') as tty:
 		# below block needs to be indented to account for this open file
-	while True:
+		while True:
 
-		# read from rfid
-		#pw = tty.readline()
+			# read from rfid
+			pw = tty.readline()
 
-		# simulate reading
-		pw = input()
+			# simulate reading
+			#pw = input()
 
-		if len(pw) != 0 and pw != "":
+			if len(pw) != 0 and pw != "":
 
-			# simulate button state
-			if pw[0] == "&": # LEARN
-				learn = 1
-				pw = pw[1:]
+				# simulate button state
+				#if pw[0] == "&": # LEARN
+				#	learn = 1
+				#	pw = pw[1:]
 
-			elif pw[0] == "*": # DELETE
-				learn = 2
-				pw = pw[1:]
+				#elif pw[0] == "*": # DELETE
+				#	learn = 2
+				#	pw = pw[1:]
 
+				#else:
+				#	learn = 0 # AUTH
+
+				if learn == 1:
+
+					pw = pw_handler(pw)
+					try:
+						res = web.post(pw)
+						if res.status_code == 201:
+							print(str(res.json()[param_id]) + ' ' + pw + ' was created via POST.')
+							led_blinker('01')
+						elif res == 0:
+							print("post() error: expected user_id, pw")
+							exit()
+						else:
+							print(f"Something went wrong. Code: {res.status_code}")
+							exit()
+					except:
+						pass
+
+				elif learn == 2:
+
+					pw = pw_handler(pw)
+					try:
+						res = web.delete(pw)
+						if res.status_code == 200:
+							print(str(res.json()[param_id]) + ' ' + ' removed via DELETE /')
+							led_blinker('10')
+						elif res == 0:
+							print("delete() error: expected user_id")
+							exit()
+						else:
+							print(f"Something went wrong. Code: {res.status_code}")
+							exit()
+					except:
+						pass
+
+				else:
+
+					pw = pw_handler(pw)
+					try:
+						res = web.get(pw)
+						if res.status_code == 200:
+							print(str(res.json()) + ' ' + pw + ' sent GET /' ) # typ tänd lampa
+							led_blinker('11')
+						else:
+							print(f"Something went wrong. Code: {res.status_code}")
+					except:
+						pass
 			else:
-				learn = 0 # AUTH
-
-			if learn == 1:
-
-				pw = pw_handler(pw)
-				try:
-					res = web.post(pw)
-					if res.status_code == 201:
-						print(str(res.json()[param_id]) + ' ' + pw + ' was created via POST.')
-						led_blinker('01')
-					elif res == 0:
-						print("post() error: expected user_id, pw")
-						exit()
-					else:
-						print(f"Something went wrong. Code: {res.status_code}")
-						exit()
-				except:
-					pass
-
-			elif learn == 2:
-
-				pw = pw_handler(pw)
-				try:
-					res = web.delete(pw)
-					if res.status_code == 200:
-						print(str(res.json()[param_id]) + ' ' + ' removed via DELETE /')
-						led_blinker('10')
-					elif res == 0:
-						print("delete() error: expected user_id")
-						exit()
-					else:
-						print(f"Something went wrong. Code: {res.status_code}")
-						exit()
-				except:
-					pass
-
-			else:
-
-				pw = pw_handler(pw)
-				try:
-					res = web.get(pw)
-					if res.status_code == 200:
-						print(str(res.json()) + ' ' + pw + ' sent GET /' ) # typ tänd lampa
-						led_blinker('11')
-					else:
-						print(f"Something went wrong. Code: {res.status_code}")
-				except:
-					pass
-		else:
-			learn = False
+				learn = False
 
 
 def main():
