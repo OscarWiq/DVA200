@@ -16,12 +16,16 @@ LED1 = 11
 LED2 = 13
 LED3 = 17
 BUTTON = 18
+#RELAY = x
 
 #GPIO settings
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BOARD) # eller BCM beror på
 GPIO.setup(LED1, GPIO.OUT)
 GPIO.setup(LED2, GPIO.OUT)
+GPIO.setup(LED3, GPIO.OUT)
+#GPIO.setuprelay(GPIO, OUT)
+#GPIO.output(RELAY, 0)
 
 def led_control(temp_msg):
     if temp_msg == "01":
@@ -163,6 +167,9 @@ def reader():
 						if res.status_code == 200:
 							print(str(res.json()) + ' ' + pw + ' sent GET /' ) # typ tänd lampa
 							led_blinker('11')
+							#GPIO.output(RELAY, 1) # lås upp
+							#sleep(10)
+							#GPIO.output(RELAY, 0) # lås igen
 						else:
 							print(f"Something went wrong. Code: {res.status_code}")
 					except:
