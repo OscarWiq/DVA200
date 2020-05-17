@@ -18,26 +18,27 @@ base_url = "https://52.200.1.200:5005"
 #base_url = "https://127.0.0.1:5000"
 
 def get(pw):
+	if not pw:
+		return 0
 	url = base_url + "/api/login"
 	res = requests.get(url, auth=HTTPBasicAuth(pw, pw), verify=False)
 	return res
 
 def post(pw):
 	global username, password
+	if not pw:
+		return 0
 	url = base_url + "/api/users"
 	body = {
 		param_usr : pw,
 		param_pw : pw
 	}
-	if len(pw) == 0 or pw == "":
-		return 0
-	print(body)
 	res = requests.post(url=url, json=body, auth=HTTPBasicAuth(username, password), verify=False)
 	return res
 
 def delete(pw):
 	global username, password
-	if not len:
+	if not pw:
 		return 0
 	url = base_url + "/api/users/del/"
 	try:
